@@ -1,0 +1,34 @@
+//Section 3
+
+//Khởi tạo playwright
+npm init playwright@latest      
+
+// Tạo file test-result
+npx playwright test     
+
+// Show report
+npx playwright show-report
+
+
+// Lệnh chạy project test trên trình duyệt chromium (chromium là Chrome browser)
+npx playwright test --project=chromium 
+
+// Lệnh chạy các bài test Playwright trên trình duyệt Chromium, với chế độ hiển thị giao diện người dùng (headed mode).
+npx playwright test --project=chromium --headed
+
+// Lệnh chạy các Test Case trong file example.spec.js
+npx playwright test example.spec.js --project=chromium
+
+// Lệnh chạy 1 TC có tên "has title" , -g ở đây là grep giúp tìm và chạy bài kthử khớp với tên
+npx playwright test -g "has title" --project=chromium 
+
+
+===== 19. UI mode ====
+npx playwright test --ui
+
+===== 20. TRACE VIEW AND DEBUG ====
+//Khi muốn ghi lại toàn bộ luồng kiểm thử để phân tích lỗi, bao gồm các thao tác, ảnh chụp màn hình, thông tin mạng và console logs.
+npx playwright test --project=chromium --trace on
+
+//Khi cần kiểm tra và sửa lỗi trực tiếp hoặc điều chỉnh lại kịch bản test trong môi trường tương tác.
+npx playwright test --project=chromium --debug

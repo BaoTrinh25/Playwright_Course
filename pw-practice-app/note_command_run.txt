@@ -1,0 +1,7 @@
+==== Section 3 
+==== 21. TESTS STRUCTURE
+Buoc1:
+npm init playwright@latest --force
+
+Buoc2:
+npm start
