@@ -12,9 +12,8 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  timeout: 10000,
+  timeout: 30000,
   globalTimeout: 60000,
-
   expect: {
     timeout: 2000 // các câu lệnh expect chỉ chờ tối đa 2 giây.
   },
@@ -32,10 +31,10 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://127.0.0.1:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    browserName: 'chromium',
+    headless: true,
+    baseURL: 'http://localhost:4200',
+  
     trace: 'on-first-retry',
     // actionTimeout: 5000,
     navigationTimeout: 15000 //Thời gian tối đa để chờ các thao tác điều hướng

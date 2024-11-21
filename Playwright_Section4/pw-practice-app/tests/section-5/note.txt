@@ -1,0 +1,14 @@
+"check" dùng để chọn 1 radio hoặc 1 checkbox, kiểm tra trạng thái và luôn luôn chọn, 
+        tránh bỏ chọn nếu có chọn trước đó (nếu sử dụng "click")
+        force: true đảm bảo thao tác sẽ diễn ra ngay cả khi radio button bị ẩn hoặc bị vô hiệu hóa.
+
+
+.isChecked():
+===> dùng để kiểm tra xem một phần tử có được chọn (checked) hay không.
+isChecked() trả về một giá trị boolean (true hoặc false):
+true: Nếu radio button đã được chọn.
+false: Nếu radio button chưa được chọn.
+
+
+expect(radioStatus).toBeTruthy():
+.toBeTruthy(): Kiểm tra xem giá trị trả về từ radioStatus có phải là true hay không.
