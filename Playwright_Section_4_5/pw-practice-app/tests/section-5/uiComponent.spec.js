@@ -1,4 +1,6 @@
 import {test, expect} from '@playwright/test'
+import exp from 'constants'
+import { Agent } from 'https'
 
 //beforeEach : đảm bảo các bài test đều phải bắt đầu từ việc truy cập trang chủ localhost
 test.beforeEach(async ({page}) => {
@@ -61,5 +63,124 @@ test.describe('Form Layouts page', () => {
     expect(option1Checked).toBeFalsy()  // Kiểm tra Option 1 không được chọn
     expect(option2Checked).toBeTruthy() // Kiểm tra Option 2 được chọn
     })
+})
 
+test('Checkboxes', async({page}) => {
+    await page.getByText('Modal & Overlays').click()
+    await page.getByText('Toastr').click()
+
+    await page.getByRole('checkbox', {name: "Hide on click"}).uncheck({force: true})
+    await page.getByRole('checkbox', {name: "Prevent arising of duplicate toast"}).check({force: true})
+
+    const checkbox = page.getByRole("checkbox")
+
+    //check
+    for (const box of await checkbox.all()) {
+        await box.check({force: true})
+        expect(await box.isChecked()).toBeTruthy()
+    }
+
+    //uncheck
+    for (const box of await checkbox.all()) {
+        await box.uncheck({force: true})
+        expect(await box.isChecked()).toBeFalsy()
+    }
+})
+
+test('Lists and dropdowns', async({page}) => {
+    const dropdown = page.locator('ngx-header nb-select')
+    await dropdown.click()
+
+    page.getByRole('list') //when the list has a UL tag
+    page.getByRole('listitem') //when the list has a LI tag
+
+    // const option =  page.getByRole('list').locator('nb-option')
+    const option = page.locator('nb-option-list nb-option')
+    await expect(option).toHaveText(["Light", "Dark", "Cosmic", "Corporate"])
+    await option.filter({hasText: "Cosmic"}).click()
+
+    const header = page.locator('nb-layout-header')
+    await expect(header).toHaveCSS('background-color', 'rgb(50, 50, 89)')
+
+    const colors = {
+        "Light": "rgb(255, 255, 255)",
+        "Dark": "rgb(34, 43, 69)",
+        "Cosmic": "rgb(50, 50, 89)",
+        "Corporate": "rgb(255, 255, 255)"
+    }
+
+    await dropdown.click()
+    //Lặp qua từng màu và chọn để thay đổi background color
+    for (const color in colors) {
+        await option.filter({hasText: color}).click()
+        await expect(header).toHaveCSS('background-color', colors[color])
+        if(color != "Corporate") //nếu != màu Corporate( màu cuối cùng) thì vẫn tiếp tục click dropdown để chọn màu 
+            await dropdown.click()
+    }
+})
+
+test('Tooltip', async({page}) => {
+    await page.getByText('Modal & Overlays').click()
+    await page.getByText('Tooltip').click()
+    
+    const toolTipCard = page.locator('nb-card', {hasText: "Tooltip Placements"})
+    await toolTipCard.getByRole('button', {name: "TOP"}).hover()
+
+    page.getByRole('tooltip')
+    const tooltip = await page.locator('nb-tooltip').textContent()
+    expect(tooltip).toEqual('This is a tooltip')
+})
+
+test('Dialog Boxes', async({page}) => {
+    await page.getByText('Tables & Data').click()
+    await page.getByText('Smart Table').click()
+
+    page.on('dialog', dialog => {
+        expect(dialog.message()).toEqual('Are you sure you want to delete?')
+        dialog.accept()
+    })
+
+    await page.locator('table tr', {hasText: "@mdo"}).locator('.nb-trash').click()
+    await expect(page.locator('table tr').first()).not.toHaveText('@mdo')
+})
+
+test('Web Table', async({page}) => {
+    await page.getByText('Tables & Data').click()
+    await page.getByText('Smart Table').click()
+
+    // 1 Get the row by any test in this row
+    const targetRow = page.getByRole('row', {name: "twitter@outlook.com"})
+    await targetRow.locator('.nb-edit').click()
+    await page.locator('input-editor').getByPlaceholder('Age').clear()
+    await page.locator('input-editor').getByPlaceholder('Age').fill('21')
+    await page.locator('.nb-checkmark').click()
+
+    //2 Get the row based on the value in the specific column
+    await page.locator('.ng2-smart-page-item', {hasText: "2"}).click()
+    const rowEditById = page.locator('table tr').filter({
+        has: page.locator('td').nth(1).getByText("11")})
+        // has: page.getByRole('cell', { name: "11" }) // Cột chứa ID "11"
+    await rowEditById.locator('.nb-edit').click()
+    await page.locator('input-editor').getByPlaceholder('E-mail').clear()
+    await page.locator('input-editor').getByPlaceholder('E-mail').fill('btrinh2505@gmail.com')
+    await page.locator('.nb-checkmark').click()
+    await expect(rowEditById.locator('td').nth(5)).toHaveText("btrinh2505@gmail.com")
+
+    //3 test filter of the table
+    const ages = ["20", "30", "40", "200"]
+    for ( let age of ages) {
+        await page.locator('input-filter').getByPlaceholder('Age').clear()
+        await page.locator('input-filter').getByPlaceholder('Age').fill(age)
+        await page.waitForTimeout(500)
+        const ageRows = page.locator('tbody tr')
+
+        for (let row of await ageRows.all()) {
+            const cellValue = await row.locator('td').last().textContent()
+            if (age == "200") {
+                expect(await page.getByRole('table').textContent()).toContain('No data found')
+            } else {
+                expect(cellValue).toEqual(age)
+            }
+        }
+    }
 })
