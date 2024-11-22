@@ -1,6 +1,4 @@
 import {test, expect} from '@playwright/test'
-import exp from 'constants'
-import { Agent } from 'https'
 
 //beforeEach : đảm bảo các bài test đều phải bắt đầu từ việc truy cập trang chủ localhost
 test.beforeEach(async ({page}) => {
