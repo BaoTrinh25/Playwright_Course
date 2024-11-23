@@ -182,3 +182,59 @@ test('Web Table', async({page}) => {
         }
     }
 })
+
+test('Date Picker', async({page}) => {
+    await page.getByText('Forms').click()
+    await page.getByText('Datepicker').click()
+
+    const calenderFormPicker = page.getByPlaceholder('Form Picker')
+    await calenderFormPicker.click()
+
+    let date = new Date()
+    date.setDate(date.getDate() + 400) //set ngày = lấy ngày hiện tại + số ngày
+    const expectedDate = date.getDate().toString()
+    /*
+        'en-US': Định dạng ngày giờ theo ngôn ngữ tiếng Anh (Mỹ).
+        { month: 'short' }: Chỉ định rằng chỉ cần lấy tháng, và định dạng viết tắt của tháng(short).
+    */
+    const expectedMonthShot = date.toLocaleString('En-US', {month: 'short'}) //lấy tên viết tắt của tháng
+    const expectedYear = date.getFullYear()
+    const dateToAssert = `${expectedMonthShot} ${expectedDate}, ${expectedYear}` //định dạng kqua trả ra: tháng ngày, năm
+
+    const expectedMonthLong = date.toLocaleString('En-US', {month: 'long'}) // lấy fullname tháng
+    let calendarMonthAndYear = await page.locator('nb-calendar-view-mode').textContent()
+    const expectedMonthAndYear = `${expectedMonthLong} ${expectedYear}`
+
+    //Kiểm tra loop click cho tới khi tháng năm trên datepicker bao gồm tháng năm như mong đợi thì dừng
+    while(!calendarMonthAndYear.includes(expectedMonthAndYear)) {
+        await page.locator('nb-calendar-pageable-navigation [data-name="chevron-right"]').click()
+        calendarMonthAndYear = await page.locator('nb-calendar-view-mode').textContent()
+    }
+
+    await page.locator('[class="day-cell ng-star-inserted"]').getByText(expectedDate, { exact: true }).click()
+    await expect(calenderFormPicker).toHaveValue(dateToAssert)
+})
+
+test('Sliders', async({page}) => {
+    //Update Attribute
+    const tempGauge = page.locator('[tabtitle="Temperature"] ngx-temperature-dragger circle')
+    await tempGauge.evaluate( node => {
+        node.setAttribute('cx', '232.630')
+        node.setAttribute('cy', '232.630')
+    })
+    await tempGauge.click()
+
+    //Mouse movement
+    const tempBox = page.locator('[tabtitle="Temperature"] ngx-temperature-dragger')
+    await tempBox.scrollIntoViewIfNeeded() //Cuộn trang để đảm bảo phần tử tempBox nằm trong vùng hiển thị của trình duyệt.
+
+    const box = await tempBox.boundingBox() //Lấy thông tin vị trí và kích thước của slider (tọa độ x, y, chiều rộng width, chiều cao height).
+    const x = box.x + box.width / 2
+    const y = box.y + box.height / 2
+    await page.mouse.move(x,y) //Di chuyển chuột đến trung tâm của slider.
+    await page.mouse.down() // Nhấn giữ chuột
+    await page.mouse.move(x + 100, y) //Kéo chuột sang phải 100 px.
+    await page.mouse.move(x + 100, y + 100) // Kéo chuột xuống dưới thêm 100 px
+    await page.mouse.up() //Nhả chuột
+    await expect(tempBox).toContainText('30')
+})
