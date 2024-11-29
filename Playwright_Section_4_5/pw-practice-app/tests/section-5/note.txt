@@ -13,6 +13,6 @@ false: Nếu radio button chưa được chọn.
 expect(radioStatus).toBeTruthy():
 .toBeTruthy(): Kiểm tra xem giá trị trả về từ radioStatus có phải là true hay không.
 
-// SỰ KHÁC NHAU GIỮ VIỆC DÙNG OF HOẶC IN TRONG LOOP
+// SỰ KHÁC NHAU GIỮA VIỆC DÙNG OF HOẶC IN TRONG LOOP
 of => lặp qua các giá trị (trong Array, String, Map, Set,...) và không hoạt động với object
 in => lặp qua các key, index trong Array và Object
