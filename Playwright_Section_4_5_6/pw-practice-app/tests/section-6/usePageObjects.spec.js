@@ -2,7 +2,7 @@ import {test} from "@playwright/test"
 import { PageManager } from '../../page-objects/pageManager'
 
 test.beforeEach(async({page}) => {
-    await page.goto('http://localhost:4200/')
+    await page.goto('http://localhost:4200/', { timeout: 40000, waitUntil: 'domcontentloaded' })
 })
 
 test('navigate to form page', async({page}) => {
