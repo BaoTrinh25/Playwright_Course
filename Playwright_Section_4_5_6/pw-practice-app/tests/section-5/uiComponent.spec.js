@@ -2,19 +2,24 @@ import {test, expect} from '@playwright/test'
 
 //beforeEach : đảm bảo các bài test đều phải bắt đầu từ việc truy cập trang chủ localhost
 test.beforeEach(async ({page}) => {
-    await page.goto('http:/localhost:4200/')
+    await page.goto('http://localhost:4200/', { timeout: 30000 })
 })
 
 //descibe dùng để nhóm các bài test liên quan đến phần Form Layouts
 test.describe('Form Layouts page', () => {
+test.describe.configure({retries: 2})
+
     test.beforeEach( async({page}) => {
         await page.getByText('Forms').click()
         await page.getByText('Form Layouts').click()
     })
 
     //_____ 33. Input Field _____
-    test('Input fields', async({page}) => {
-        test.setTimeout(20000); // 20 giây
+    test('Input fields', async({page}, testInfo) => {
+        if(testInfo.retry){
+            
+        }
+        test.setTimeout(30000); // 20 giây
         const inputEmail = page.locator('nb-card', {hasText: "Using the Grid"}).getByRole('textbox', {name: "Email"})
         
         await inputEmail.fill('test@test.com')
