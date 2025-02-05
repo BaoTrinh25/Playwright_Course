@@ -8,7 +8,10 @@
   },
   "scripts": {
     "ng": "ng",
-    "start": "ng serve"
+    "start": "ng serve",
+    "pageObjects-chrome": "npx playwright test tests/section-6/usePageObjects.spec.js --project=chromium",
+    "pageObjects-firefox": "npx playwright test tests/section-6/usePageObjects.spec.js --project=firefox",
+    "pageObjects-all": "npm run pageObjects-chrome && npm run pageObjects-firefox"
   },
   "dependencies": {
     "@angular/animations": "^14.2.12",
